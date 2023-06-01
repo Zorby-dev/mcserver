@@ -1,0 +1,17 @@
+[package]
+name = "mcserver"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+byteorder = "1.4.3"
+
+[dependencies.paris]
+version = "1.5.15"
+features = [ "macros" ]
+
+[dependencies.tokio]
+version = "1"
+features = ["full"]
