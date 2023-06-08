@@ -1,13 +1,29 @@
-use mcserver::{receiver::Receiver, packets::Packet, switch};
+use mcserver::{receiver::Receiver, packets::{HandshakingServerboundPacket, StatusServerboundPacket}, switch};
 use tokio::net::{TcpListener, TcpStream};
 
+enum ConnectionState {
+    Handshaking,
+    Status
+}
+
 async fn handle_connection(stream: TcpStream) {
+    let mut connection_state = ConnectionState::Handshaking;
     let mut receiver = Receiver::new(stream);
 
     loop {
-        match receiver.receive().await.unwrap() {
-            Packet::Handshake(data) => {
-                println!("{:?}", data);
+        match connection_state {
+            ConnectionState::Handshaking => match receiver.receive().await.unwrap() {
+                HandshakingServerboundPacket::Handshake(data) => {
+                    match data.next_state.into() {
+                        1 => connection_state = ConnectionState::Status,
+                        _ => unreachable!()
+                    }
+                }
+            },
+            ConnectionState::Status => match receiver.receive().await.unwrap() {
+                StatusServerboundPacket::StatusRequest(data) => {
+                    println!("{:?}", data);
+                }
             }
         }
     }

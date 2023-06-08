@@ -2,7 +2,7 @@ use std::io::Read;
 
 use byteorder::{ReadBytesExt, BigEndian};
 
-use crate::{types::VarI32, packets::{Packet, HandshakeData}};
+use crate::{types::VarI32, packets::{HandshakingServerboundPacket, HandshakeData, StatusServerboundPacket, StatusRequestData}};
 
 pub trait Decode {
     fn decode(reader: &mut impl Read) -> DecodeResult<Self> where Self: Sized;
@@ -33,7 +33,7 @@ impl Decode for u16 {
     }
 }
 
-impl Decode for Packet {
+impl Decode for HandshakingServerboundPacket {
     fn decode(reader: &mut impl Read) -> DecodeResult<Self> {
         let id: i32 = VarI32::decode(reader)?.into();
 
@@ -46,6 +46,19 @@ impl Decode for Packet {
                 server_port: u16::decode(reader)?,
                 next_state: VarI32::decode(reader)?
             }),
+            _ => unreachable!()
+        })
+    }
+}
+
+impl Decode for StatusServerboundPacket {
+    fn decode(reader: &mut impl Read) -> DecodeResult<Self> {
+        let id: i32 = VarI32::decode(reader)?.into();
+
+        dbg!(id);
+
+        Ok(match id {
+            0x00 => Self::StatusRequest(StatusRequestData { }),
             _ => unreachable!()
         })
     }

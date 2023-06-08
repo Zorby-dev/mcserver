@@ -8,6 +8,22 @@ pub struct HandshakeData {
     pub next_state: VarI32
 }
 
-pub enum Packet {
+pub enum HandshakingServerboundPacket {
     Handshake(HandshakeData)
+}
+
+#[derive(Debug)]
+pub struct StatusRequestData { }
+
+pub enum StatusServerboundPacket {
+    StatusRequest(StatusRequestData)
+}
+
+#[derive(Debug)]
+pub struct StatusResponseData {
+    response: String
+}
+
+pub enum StatusClientboundPacket {
+    StatusResponse(StatusResponseData)
 }

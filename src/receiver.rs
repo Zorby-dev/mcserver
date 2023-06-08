@@ -3,7 +3,7 @@ use tokio::net::TcpStream;
 use tokio::io::AsyncReadExt;
 
 use crate::decode::{DecodeResult, DecodeError, Decode};
-use crate::packets::Packet;
+use crate::packets::HandshakingServerboundPacket;
 use crate::types::VarI32;
 
 pub struct Receiver {
@@ -19,7 +19,7 @@ impl Receiver {
         }
     }
 
-    pub async fn receive(&mut self) -> DecodeResult<Packet> {
+    pub async fn receive<T: Decode>(&mut self) -> DecodeResult<T> {
         // TODO: add timeout
         loop {
             let read_count = self.stream.read_buf(&mut self.buffer).await.unwrap();
@@ -38,7 +38,7 @@ impl Receiver {
 
                     self.buffer.advance(size_len);
 
-                    return Packet::decode(&mut &self.buffer.split_to(size)[..]);
+                    return T::decode(&mut &self.buffer.split_to(size)[..]);
                 },
                 Err(DecodeError::UnexpectedEOF) => continue
             }

@@ -19,3 +19,9 @@ impl From<VarI32> for i32 {
         output
     }
 }
+
+impl From<i32> for VarI32 {
+    fn from(value: i32) -> Self {
+        
+    }
+}
