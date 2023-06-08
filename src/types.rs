@@ -1,21 +1,21 @@
-use std::marker::PhantomData;
-
-pub struct Var<T>(PhantomData<T>);
-pub struct UUID;
-
+// The bytes inside this struct are reversed (big-endian)
 #[derive(Debug)]
-pub struct Identifier {
-    pub namespace: String,
-    pub value: String
-}
+pub struct VarI32(pub [u8; 5]);
 
-impl ToString for Identifier {
-    fn to_string(&self) -> String {
-        format!("{}:{}", self.namespace, self.value)
+impl VarI32 {
+    pub fn len(&self) -> usize {
+        self.0.iter().filter(|i| **i != 0).count()
     }
 }
 
-pub mod consts {
-    pub const VAR_DATA_BITS    : i32 = 0b0111_1111;
-    pub const VAR_CONTINUE_BIT : i32 = 0b1000_0000;
+impl From<VarI32> for i32 {
+    fn from(value: VarI32) -> Self {
+        let mut output: Self = 0;
+
+        for (i, byte) in value.0.iter().enumerate() {
+            output |= *byte as i32 & 0x7F << i * 7;
+        }
+
+        output
+    }
 }
