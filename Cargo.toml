@@ -8,6 +8,7 @@ edition = "2021"
 [dependencies]
 byteorder = "1.4.3"
 bytes = "1.4.0"
+paste = "1.0.12"
 
 [dependencies.paris]
 version = "1.5.15"

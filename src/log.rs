@@ -6,8 +6,8 @@ macro_rules! switch {
                 paris::info!($ok, $($arg),*);
                 value
             }
-            Err(_) => {
-                paris::error!($err);
+            Err(error) => {
+                paris::error!("{}\n{}", $err, error);
                 panic!();
             }
         }
